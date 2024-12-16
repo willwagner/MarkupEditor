@@ -12,7 +12,9 @@ import SwiftUI
 public struct CorrectionToolbar: View {
     @ObservedObject private var observedWebView: ObservedWebView = MarkupEditor.observedWebView
     @State private var hoverLabel: Text = Text("Correction")
-    
+
+     public init(){}
+
     public var body: some View {
         LabeledToolbar(label: hoverLabel) {
             ToolbarImageButton(
