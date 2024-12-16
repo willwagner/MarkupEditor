@@ -25,7 +25,8 @@ public struct InsertToolbar: View {
     @State private var showTablePopover: Bool = false
     @State private var rows: Int = 0
     @State private var cols: Int = 0
-    
+
+    public init(){}
     public var body: some View {
         LabeledToolbar(label: hoverLabel) {
             if contents.link {
