@@ -134,7 +134,9 @@ public class MarkupWKWebView: WKWebView, ObservableObject {
         markupConfiguration = configuration ?? MarkupWKWebViewConfiguration()
         initForEditing()
     }
-    
+    public func getResourcesUrl() -> URL? {
+        return self.resourcesUrl
+    }
     /// Set things up properly for editing.
     ///
     /// Setting things up means populating a cache directory with the "root" files: markup.html,
