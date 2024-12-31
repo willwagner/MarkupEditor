@@ -153,7 +153,7 @@ extension MarkupDelegate {
     
     /// The MarkupWKWebView has loaded the JavaScript and CSS, but the editor html has
     /// not been loaded.
-    public func markupWillLoad(_ view: MarkupWKWebView, html: String) -> {return html}
+    public func markupWillLoad(_ view: MarkupWKWebView, html: String) -> String {return html}
     
     /// The MarkupWKWebView has loaded the JavaScript and any html contents.
     ///
