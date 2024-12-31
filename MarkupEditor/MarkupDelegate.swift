@@ -36,7 +36,7 @@ public protocol MarkupDelegate {
     /// Called before the initial HTML is loaded, allowing you to perform any pre-load activity.
     ///
     /// When this call is made, the root files, userCSS, and userScripts have been loaded already.
-    func markupWillLoad(_ view: MarkupWKWebView, html: String) -> String
+    func markupWillLoad(_ view: MarkupWKWebView, html: String?) -> String?
     
     /// Called when the MarkupWKWebView has become ready to receive input.
     /// More concretely, is called when the internal WKWebView loads for the first time, and contentHtml is set.
@@ -153,7 +153,7 @@ extension MarkupDelegate {
     
     /// The MarkupWKWebView has loaded the JavaScript and CSS, but the editor html has
     /// not been loaded.
-    public func markupWillLoad(_ view: MarkupWKWebView, html: String) -> String {return html}
+    public func markupWillLoad(_ view: MarkupWKWebView, html: String?) -> String? {return html}
     
     /// The MarkupWKWebView has loaded the JavaScript and any html contents.
     ///
