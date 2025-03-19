@@ -1,5 +1,5 @@
 //
-//  StyledViewController.swift
+//  CustomViewController.swift
 //  MarkupEditor
 //
 //  Created by Steven Harris on 1/13/24.
@@ -10,19 +10,15 @@ import SwiftUI
 import MarkupEditor
 import Combine
 
-/// The main view for the UIKitDemo.
-///
-/// Displays the MarkupEditorUIView containing demo.html and a TextView to display the raw HTML that can be toggled
-/// on and off from the FileToolbar. By default, the MarkupEditorUIView shows the MarkupToolbarUIView at the top.
-///
-/// Acts as the MarkupDelegate to interact with editing operations as needed, and as the FileToolbarDelegate to interact
-/// with the FileToolbar.
-class StyledViewController: UIViewController {
+/// Identical to the DemoViewController, except also demonstrating the use of custom.js and custom.css
+/// to customize style and add a user script that returns the word count of the document.
+class CustomViewController: UIViewController {
     var stack: UIStackView!
     var webView: MarkupWKWebView!
     /// To see the raw HTML
     private var rawTextView: UITextView!
     private var bottomStack: UIStackView!
+    private var wordCountLabel: UILabel!
     private var bottomStackHeightConstraint: NSLayoutConstraint!
     /// Which MarkupWKWebView we have selected and which the MarkupToolbar acts on
     var selectedWebView: MarkupWKWebView? { MarkupEditor.selectedWebView }
@@ -40,6 +36,9 @@ class StyledViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Identify any resources coming from the app bundle that need to be co-located with
+        // the document. In this case, we have an image that we load from within demo.html.
+        markupConfiguration.userResourceFiles = ["steve.png"]
         // Identify the the css and js that will be loaded after markup.html is fully loaded.
         // For demo purposes, both files are included in SharedDemo. See markupLoaded below
         // where the classes are assigned using a call to `assignClasses` in the MarkupWKWebView.
@@ -86,6 +85,20 @@ class StyledViewController: UIViewController {
         stack.frame = view.frame
         stack.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(stack)
+        wordCountLabel = UILabel()
+        wordCountLabel.textAlignment = .center
+        stack.addSubview(wordCountLabel)
+        wordCountLabel.translatesAutoresizingMaskIntoConstraints = false
+        // Really UIKit, this is what I need to do to get safeAreaInsets in a view controller!?
+        let window = UIApplication.shared.connectedScenes.compactMap({($0 as? UIWindowScene)?.keyWindow}).last
+        let topPadding = window?.safeAreaInsets.top ?? 30
+        NSLayoutConstraint.activate([
+            wordCountLabel.topAnchor.constraint(equalTo: stack.topAnchor, constant: topPadding + 10),
+            wordCountLabel.heightAnchor.constraint(equalToConstant: 40),
+            wordCountLabel.leftAnchor.constraint(equalTo: stack.leftAnchor),
+            wordCountLabel.rightAnchor.constraint(equalTo: stack.rightAnchor),
+        ])
+        stack.addArrangedSubview(wordCountLabel)
         // Create the webView
         let markupEditorView = MarkupEditorUIView(markupDelegate: self, configuration: markupConfiguration, html: demoHtml(), resourcesUrl: resourcesUrl, id: "Document")
         stack.addArrangedSubview(markupEditorView)
@@ -110,6 +123,9 @@ class StyledViewController: UIViewController {
     private func setRawText(_ handler: (()->Void)? = nil) {
         selectedWebView?.getHtml { html in
             self.rawTextView.attributedText = self.attributedString(from: html ?? "")
+            self.selectedWebView?.wordcount { count in
+                self.wordCountLabel.text = "Word count: \(count ?? 0)"
+            }
             handler?()
         }
     }
@@ -145,12 +161,11 @@ class StyledViewController: UIViewController {
 
 }
 
-extension StyledViewController: MarkupDelegate {
+extension CustomViewController: MarkupDelegate {
     
     func markupDidLoad(_ view: MarkupWKWebView, handler: (()->Void)?) {
         // Now that the code in markup.js and custom.js has been loaded, and the markup.css and custom.css
         // have been set, we can invoke assigClasses to set the classes that custom.css styles.
-        view.assignClasses()
         MarkupEditor.selectedWebView = view
         setRawText(handler)
     }
@@ -166,7 +181,7 @@ extension StyledViewController: MarkupDelegate {
     
 }
 
-extension StyledViewController: FileToolbarDelegate {
+extension CustomViewController: FileToolbarDelegate {
     
     func newDocument(handler: ((URL?)->Void)? = nil) {
         selectedWebView?.emptyDocument() {
@@ -189,7 +204,7 @@ extension StyledViewController: FileToolbarDelegate {
     
 }
 
-extension StyledViewController: UIDocumentPickerDelegate {
+extension CustomViewController: UIDocumentPickerDelegate {
     
     /// Handle the two cases for the document picker: selecting a local image and opening an existing html document.
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {

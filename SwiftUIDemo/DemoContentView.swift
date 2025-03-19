@@ -29,10 +29,12 @@ struct DemoContentView: View {
     @State private var documentPickerShowing: Bool = false
     @State private var rawShowing: Bool = false
     @State private var demoHtml: String
+    /// The `markupConfiguration` holds onto the name of any userResourceFiles we set in init.
+    private let markupConfiguration = MarkupWKWebViewConfiguration()
     
     var body: some View {
         VStack(spacing: 0) {
-            MarkupEditorView(markupDelegate: self, html: $demoHtml, id: "Document")
+            MarkupEditorView(markupDelegate: self, configuration: markupConfiguration, html: $demoHtml, placeholder: "Add document content...", id: "Document")
             if rawShowing {
                 VStack {
                     Divider()
@@ -60,6 +62,9 @@ struct DemoContentView: View {
         } else {
             _demoHtml = State(initialValue: "")
         }
+        // Identify any resources coming from the app bundle that need to be co-located with
+        // the document. In this case, we have an image that we load from within demo.html.
+        markupConfiguration.userResourceFiles = ["steve.png"]
     }
     
     private func setRawText(_ handler: (()->Void)? = nil) {
@@ -97,7 +102,11 @@ extension DemoContentView: MarkupDelegate {
     
     func markupInput(_ view: MarkupWKWebView) {
         // This is way too heavyweight, but it suits the purposes of the demo
-        setRawText()
+        view.getSelectionState() { selectionState in
+            //Logger.coordinator.debug("* selectionChange")
+            MarkupEditor.selectionState.reset(from: selectionState)
+            setRawText()
+        }
     }
     
     /// Callback received after a local image has been added to the document.

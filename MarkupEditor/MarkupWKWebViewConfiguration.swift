@@ -29,7 +29,13 @@ public class MarkupWKWebViewConfiguration {
     
     public var userScriptFile: String? = nil
     public var userCssFile: String? = nil
+    public var userResourceFiles: [String]? = nil
     public var topLevelAttributes = EditableAttributes.standard
+    #if targetEnvironment(macCatalyst)
+    public var padBottom = false
+    #elseif os(iOS)
+    public var padBottom = true
+    #endif
     
     public init() {}
 }
