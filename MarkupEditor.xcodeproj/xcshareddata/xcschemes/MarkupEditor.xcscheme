@@ -30,7 +30,8 @@
       <Testables>
          <TestableReference
             skipped = "NO"
-            parallelizable = "NO">
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AAFADF40261524AE0024F2DC"
@@ -38,11 +39,30 @@
                BlueprintName = "BasicTests"
                ReferencedContainer = "container:MarkupEditor.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "BasicTests/testBlockquoteEnter()">
-               </Test>
-            </SkippedTests>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AA2FA8A627FE44C90068828F"
+               BuildableName = "UndoTests.xctest"
+               BlueprintName = "UndoTests"
+               ReferencedContainer = "container:MarkupEditor.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AA2548722805FAE300C9DEB2"
+               BuildableName = "RedoTests.xctest"
+               BlueprintName = "RedoTests"
+               ReferencedContainer = "container:MarkupEditor.xcodeproj">
+            </BuildableReference>
          </TestableReference>
       </Testables>
    </TestAction>

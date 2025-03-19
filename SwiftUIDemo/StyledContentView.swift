@@ -8,22 +8,19 @@
 import SwiftUI
 import MarkupEditor
 
-/// Identical to the DemoContentView, except also demonstrating the use of custom.js and custom.css
-/// to customize style and add a userscript that returns the wordcount of the document.
-struct CustomizedContentView: View {
+/// Identical to the DemoContentView, except also demonstrating the use of custom.js and custom.css.
+struct StyledContentView: View {
 
     @ObservedObject var selectImage = MarkupEditor.selectImage
     @State private var rawText = NSAttributedString(string: "")
     @State private var documentPickerShowing: Bool = false
     @State private var rawShowing: Bool = false
     @State private var demoHtml: String
-    @State private var wordCount: Int = 0
     /// The `markupConfiguration` holds onto the userCSSFile and userScriptFile we set in init.
     private let markupConfiguration = MarkupWKWebViewConfiguration()
     
     var body: some View {
         VStack(spacing: 0) {
-            Label("Word count: \(wordCount)", systemImage: "text.word.spacing")
             MarkupEditorView(markupDelegate: self, configuration: markupConfiguration, html: $demoHtml, id: "Document")
             if rawShowing {
                 VStack {
@@ -62,7 +59,6 @@ struct CustomizedContentView: View {
     private func setRawText(_ handler: (()->Void)? = nil) {
         MarkupEditor.selectedWebView?.getHtml { html in
             rawText = attributedString(from: html ?? "")
-            MarkupEditor.selectedWebView?.wordcount { count in wordCount = count ?? 0 }
             handler?()
         }
     }
@@ -72,7 +68,7 @@ struct CustomizedContentView: View {
         var attributes = [NSAttributedString.Key: AnyObject]()
         attributes[.foregroundColor] = UIColor.label
         attributes[.font] = UIFont.monospacedSystemFont(ofSize: StyleContext.P.fontSize, weight: .regular)
-        return /Users/steve/XCodeProjects/MarkupEditor/SwiftUIDemo/StyledContentView.swiftNSAttributedString(string: string, attributes: attributes)
+        return NSAttributedString(string: string, attributes: attributes)
     }
     
     private func openExistingDocument(url: URL) {
@@ -86,11 +82,12 @@ struct CustomizedContentView: View {
     
 }
 
-extension CustomizedContentView: MarkupDelegate {
+extension StyledContentView: MarkupDelegate {
     
     func markupDidLoad(_ view: MarkupWKWebView, handler: (()->Void)?) {
         // Now that the code in markup.js and custom.js has been loaded, and the markup.css and custom.css
-        // have been set, we can invoke wordCount to display the number of words in the document.
+        // have been set, we can invoke assigClasses to set the classes that custom.css styles.
+        view.assignClasses()
         MarkupEditor.selectedWebView = view
         setRawText(handler)
     }
@@ -112,7 +109,7 @@ extension CustomizedContentView: MarkupDelegate {
 
 }
 
-extension CustomizedContentView: FileToolbarDelegate {
+extension StyledContentView: FileToolbarDelegate {
 
     func newDocument(handler: ((URL?)->Void)? = nil) {
         MarkupEditor.selectedWebView?.emptyDocument() {

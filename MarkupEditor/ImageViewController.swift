@@ -251,9 +251,9 @@ class ImageViewController: UIViewController {
         return arg.isEmpty ? nil : arg
     }
     
-    /// Save a new image or modify the existing image
+    /// Save the image, but if argSrc is nil, then we need to use modifyImage to delete the image
     private func saveImage(_ handler: (()->Void)? = nil) {
-        if let argSrc = argSrc, argSrc != savedSrc {
+        if let argSrc = argSrc {
             MarkupEditor.selectedWebView?.insertImage(src: argSrc, alt: argAlt, handler: handler)
         } else {
             MarkupEditor.selectedWebView?.modifyImage(src: argSrc, alt: argAlt, handler: handler)
@@ -301,7 +301,10 @@ class ImageViewController: UIViewController {
                 self.dismiss()
             }
         } else {
-            dismiss()
+            // Use endModalInput because insertImage was never called to restore selection
+            MarkupEditor.selectedWebView?.endModalInput {
+                self.dismiss()
+            }
         }
     }
     
